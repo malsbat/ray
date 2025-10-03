@@ -345,7 +345,8 @@ class DeltaDatasink(Datasink[List["AddAction"]]):
 
             mode_value = "overwrite" if self.mode == WriteMode.OVERWRITE else "append"
 
-            existing_table.create_write_transaction(
+            # Create and commit write transaction
+            transaction = existing_table.create_write_transaction(
                 actions=all_add_actions,
                 mode=mode_value,
                 schema=existing_table.schema(),
@@ -353,6 +354,8 @@ class DeltaDatasink(Datasink[List["AddAction"]]):
                 commit_properties=self.delta_write_config.commit_properties,
                 post_commithook_properties=self.delta_write_config.post_commithook_properties,
             )
+            # Commit the transaction to persist data
+            transaction.commit()
 
     def _infer_schema(self, add_actions: List["AddAction"]) -> pa.Schema:
         """Infer schema from first file and partition columns."""
