@@ -1,12 +1,17 @@
 """Utility functions for ray.data.read()."""
 
 import logging
-from typing import Dict, List, Optional, Set, Tuple
+from typing import TYPE_CHECKING, Dict, List, Optional, Set, Tuple
+
+if TYPE_CHECKING:
+    import pyarrow.fs as pafs
 
 logger = logging.getLogger(__name__)
 
 
-def detect_file_type(file_path: str, extension_mapping: Dict[str, Tuple[str, any]]) -> Optional[Tuple[str, any]]:
+def detect_file_type(
+    file_path: str, extension_mapping: Dict[str, Tuple[str, any]]
+) -> Optional[Tuple[str, any]]:
     """Detect file type from path using extension mapping.
 
     Args:
@@ -16,8 +21,6 @@ def detect_file_type(file_path: str, extension_mapping: Dict[str, Tuple[str, any
     Returns:
         Tuple of (type_name, reader_func) or None if not detected.
     """
-    file_lower = file_path.lower()
-
     # Try compound extensions first (e.g., .csv.gz)
     for ext_len in [2, 1]:
         parts = file_path.rsplit(".", ext_len)
@@ -30,8 +33,7 @@ def detect_file_type(file_path: str, extension_mapping: Dict[str, Tuple[str, any
 
 
 def group_files_by_type(
-    file_paths: List[str],
-    extension_mapping: Dict[str, Tuple[str, any]]
+    file_paths: List[str], extension_mapping: Dict[str, Tuple[str, any]]
 ) -> Tuple[Dict[str, List[str]], List[str]]:
     """Group files by detected type.
 
@@ -68,23 +70,57 @@ def get_supported_extensions() -> Set[str]:
         # Parquet
         "parquet",
         # CSV
-        "csv", "csv.gz", "csv.br", "csv.zst", "csv.lz4",
+        "csv",
+        "csv.gz",
+        "csv.br",
+        "csv.zst",
+        "csv.lz4",
         # JSON
-        "json", "jsonl",
-        "json.gz", "jsonl.gz",
-        "json.br", "jsonl.br",
-        "json.zst", "jsonl.zst",
-        "json.lz4", "jsonl.lz4",
+        "json",
+        "jsonl",
+        "json.gz",
+        "jsonl.gz",
+        "json.br",
+        "jsonl.br",
+        "json.zst",
+        "jsonl.zst",
+        "json.lz4",
+        "jsonl.lz4",
         # Text
         "txt",
         # Images
-        "png", "jpg", "jpeg", "tif", "tiff", "bmp", "gif",
+        "png",
+        "jpg",
+        "jpeg",
+        "tif",
+        "tiff",
+        "bmp",
+        "gif",
         # Audio
-        "mp3", "wav", "aac", "flac", "ogg", "m4a", "wma",
-        "alac", "aiff", "pcm", "amr", "opus",
+        "mp3",
+        "wav",
+        "aac",
+        "flac",
+        "ogg",
+        "m4a",
+        "wma",
+        "alac",
+        "aiff",
+        "pcm",
+        "amr",
+        "opus",
         # Video
-        "mp4", "mkv", "mov", "avi", "wmv", "flv", "webm",
-        "m4v", "3gp", "mpeg", "mpg",
+        "mp4",
+        "mkv",
+        "mov",
+        "avi",
+        "wmv",
+        "flv",
+        "webm",
+        "m4v",
+        "3gp",
+        "mpeg",
+        "mpg",
         # NumPy
         "npy",
         # Avro
@@ -92,7 +128,8 @@ def get_supported_extensions() -> Set[str]:
         # TFRecords
         "tfrecords",
         # HTML
-        "html", "htm",
+        "html",
+        "htm",
     }
 
 
@@ -148,7 +185,7 @@ def validate_reader_args(reader_func: any, args: Dict) -> Dict:
     return filtered_args
 
 
-def estimate_dataset_size(files: List[str], filesystem) -> int:
+def estimate_dataset_size(files: List[str], filesystem: "pafs.FileSystem") -> int:
     """Estimate total dataset size from file list.
 
     Args:
@@ -186,7 +223,7 @@ def check_file_compatibility(files_by_type: Dict[str, List[str]]) -> bool:
 def get_optimal_parallelism(
     num_files: int,
     total_size_bytes: int,
-    target_block_size_bytes: int = 512 * 1024 * 1024  # 512 MB default
+    target_block_size_bytes: int = 512 * 1024 * 1024,  # 512 MB default
 ) -> int:
     """Calculate optimal parallelism based on dataset characteristics.
 
@@ -237,7 +274,9 @@ def format_read_statistics(stats: Dict) -> str:
     return "\n".join(lines)
 
 
-def suggest_optimization(files_by_type: Dict[str, List[str]], total_size_bytes: int) -> List[str]:
+def suggest_optimization(
+    files_by_type: Dict[str, List[str]], total_size_bytes: int
+) -> List[str]:
     """Suggest optimizations based on dataset characteristics.
 
     Args:
@@ -327,6 +366,7 @@ def is_hidden_file(file_path: str) -> bool:
         True if the file appears to be hidden.
     """
     import os.path
+
     basename = os.path.basename(file_path)
     return basename.startswith(".")
 
@@ -359,4 +399,3 @@ def deduplicate_files(file_paths: List[str]) -> List[str]:
             seen.add(path)
             result.append(path)
     return result
-
