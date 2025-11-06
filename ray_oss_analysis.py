@@ -81,13 +81,18 @@ def copy_licenses(package_names):
         subprocess.run(f"cp {bazel_output_base}/external/{package_name}/**LICENSE* {output_folder}/{package_name}/", shell=True)
         subprocess.run(f"cp {bazel_output_base}/external/{package_name}/**COPYING* {output_folder}/{package_name}/", shell=True)
 
+def readLicenseFile(path):
+    bad_chars = re.compile(r"[\x00-\x08\x0B\x0C\x0E-\x1F]")
+    with open(path, 'r', encoding='utf-8', errors='replace') as file:
+        return bad_chars.sub('', file.read())
+
 def run_askalono(dependencies):
     license_info = []
     askalono_pattern = re.compile(r'^(\/[^\n]+)\nLicense:\s*([^\n]+)\nScore:\s*([0-9.]+)', re.M)
     for dependency in dependencies:
         license_text = subprocess.run(f"askalono crawl {bazel_output_base}/external/{dependency}", capture_output=True, text=True, shell=True).stdout.strip()
         licenses = [
-            {"dependency": dependency, "path": m.group(1), "license": m.group(2).strip(), "score": float(m.group(3)), "content": open(m.group(1)).read()}
+            {"dependency": dependency, "path": m.group(1).replace(f"{bazel_output_base}/external/", ""), "license": m.group(2).strip(), "score": float(m.group(3)), "content": readLicenseFile(m.group(1))}
             for m in askalono_pattern.finditer(license_text)
         ]
         license_info.extend(licenses)
@@ -148,8 +153,8 @@ Examples:
         logger.debug(f"Dependency: {dependency}")
 
     output_folder = args.output
-    copy_files(file_paths)
-    copy_licenses(package_names)
+    # copy_files(file_paths)
+    # copy_licenses(package_names)
     
     if args.askalono:
         askalono_results = run_askalono(package_names)
