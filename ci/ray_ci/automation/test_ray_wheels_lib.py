@@ -176,7 +176,7 @@ def test_download_ray_wheels_from_s3_with_branch(
         assert mock_download_wheel.call_count == len(SAMPLE_WHEELS)
         for i, call_args in enumerate(mock_download_wheel.call_args_list):
             assert (
-               call_args[0][0] == f"custom_branch/{commit_hash}/{SAMPLE_WHEELS[i]}.whl"
+                call_args[0][0] == f"custom_branch/{commit_hash}/{SAMPLE_WHEELS[i]}.whl"
             )
             assert call_args[0][1] == tmp_dir
 
