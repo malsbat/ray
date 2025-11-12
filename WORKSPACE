@@ -80,12 +80,6 @@ python_register_toolchains(
     register_toolchains = False,
 )
 
-python_register_toolchains(
-    name = "python3_12",
-    python_version = "3.12",
-    register_toolchains = False,
-)
-
 load("@python3_9//:defs.bzl", python39 = "interpreter")
 load("@rules_python//python/pip_install:repositories.bzl", "pip_install_dependencies")
 
@@ -110,7 +104,6 @@ register_execution_platforms(
     "//bazel:py39_platform",
     "//bazel:py310_platform",
     "//bazel:py311_platform",
-    "//bazel:py312_platform",
 )
 
 http_archive(
