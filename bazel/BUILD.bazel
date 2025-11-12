@@ -149,12 +149,6 @@ constraint_value(
     visibility = ["//visibility:public"],
 )
 
-constraint_value(
-    name = "py312",
-    constraint_setting = ":python_version",
-    visibility = ["//visibility:public"],
-)
-
 platform(
     name = "py39_platform",
     constraint_values = [":py39"],
