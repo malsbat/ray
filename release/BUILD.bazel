@@ -6,6 +6,7 @@ compile_pip_requirements(
     name = "requirements_buildkite",
     requirements_in = "requirements_buildkite.in",
     requirements_txt = "requirements_buildkite.txt",
+    data = [":requirements-doc.txt"],
     tags = [
         "team:ci",
     ],
@@ -16,6 +17,7 @@ compile_pip_requirements(
     name = "requirements_py310",
     requirements_in = "requirements_py310.in",
     requirements_txt = "requirements_py310.txt",
+    data = [":requirements-doc.txt"],
     tags = [
         "team:ci",
     ],

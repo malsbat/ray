@@ -23,6 +23,7 @@ appnope
 sphinx-docsearch==0.0.7
 
 pydantic==2.5.0
+pydantic-settings==2.2.1
 
 # MyST
 myst-parser==2.0.0 # Needed to parse markdown

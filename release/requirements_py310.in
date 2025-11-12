@@ -26,6 +26,7 @@ tzdata
 requests >= 2.31.0
 tqdm
 networkx
+-r requirements-doc.txt
 
 # Upgrades
 typing-extensions>=4.10
