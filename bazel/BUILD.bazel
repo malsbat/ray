@@ -1,6 +1,5 @@
 load("@python3_9//:defs.bzl", python39 = "interpreter")
 load("@python3_10//:defs.bzl", python310 = "interpreter")
-load("@python3_11//:defs.bzl", python311 = "interpreter")
 load("@py_deps_py310//:requirements.bzl", ci_require = "requirement")
 load("@rules_python//python:defs.bzl", "py_binary", "py_library", "py_runtime", "py_runtime_pair")
 
@@ -108,27 +107,6 @@ toolchain(
     toolchain_type = "@bazel_tools//tools/python:toolchain_type",
 )
 
-py_runtime(
-    name = "py311_runtime",
-    interpreter = python311,
-    python_version = "PY3",
-    visibility = ["//visibility:private"],
-)
-
-py_runtime_pair(
-    name = "py311_runtime_pair",
-    py2_runtime = None,
-    py3_runtime = ":py311_runtime",
-    visibility = ["//visibility:private"],
-)
-
-toolchain(
-    name = "py311_toolchain",
-    exec_compatible_with = [":py311"],
-    toolchain = ":py311_runtime_pair",
-    toolchain_type = "@bazel_tools//tools/python:toolchain_type",
-)
-
 constraint_setting(name = "python_version")
 
 constraint_value(
@@ -143,12 +121,6 @@ constraint_value(
     visibility = ["//visibility:public"],
 )
 
-constraint_value(
-    name = "py311",
-    constraint_setting = ":python_version",
-    visibility = ["//visibility:public"],
-)
-
 platform(
     name = "py39_platform",
     constraint_values = [":py39"],
@@ -159,13 +131,6 @@ platform(
 platform(
     name = "py310_platform",
     constraint_values = [":py310"],
-    parents = ["@local_config_platform//:host"],
-    visibility = ["//visibility:private"],
-)
-
-platform(
-    name = "py311_platform",
-    constraint_values = [":py311"],
     parents = ["@local_config_platform//:host"],
     visibility = ["//visibility:private"],
 )
